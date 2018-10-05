@@ -37,12 +37,70 @@ class Email implements Rule {
     private $allowTld;
 
     /**
+     * @var Email
+     */
+    private static $emailValidator;
+
+    /**
+     * @var Email
+     */
+    private static $emailValidatorWithTld;
+
+    /**
+     * @var Email
+     */
+    private static $emailValidatorWithLocal;
+
+    /**
+     * @var Email
+     */
+    private static $emailValidatorWithLocalWithTld;
+
+    /**
+     * @param bool $allowLocal
+     * @param bool $allowTld
+     *
+     * @return Email
+     */
+    public static function getInstance(bool $allowLocal = false, bool $allowTld = false) : Email {
+        if ($allowLocal) {
+            if ($allowTld) {
+                if (!self::$emailValidatorWithLocalWithTld) {
+                    self::$emailValidatorWithLocalWithTld = new self(true, true);
+                }
+
+                return self::$emailValidatorWithLocalWithTld;
+            }
+
+            if (!self::$emailValidatorWithLocal) {
+                self::$emailValidatorWithLocal = new self(true, false);
+            }
+
+            return self::$emailValidatorWithLocal;
+        }
+
+        if ($allowTld) {
+            if (!self::$emailValidatorWithTld) {
+                self::$emailValidatorWithTld = new self(false, true);
+            }
+
+            return self::$emailValidatorWithTld;
+        }
+
+        if (!self::$emailValidator) {
+            self::$emailValidator = new self(false, false);
+        }
+
+        return self::$emailValidator;
+    }
+
+    /**
      * Email constructor.
      *
      * @param bool $allowLocal
      * @param bool $allowTld
      */
-    public function __construct(bool $allowLocal = false, bool $allowTld = false) {
+    protected function __construct(bool $allowLocal = false, bool $allowTld = false) {
         $this->allowLocal = $allowLocal;
         $this->allowTld = $allowTld;
     }
@@ -99,10 +157,10 @@ class Email implements Rule {
         }
 
         // Domain is symbolic name
-        $domainValidator = new Domain($this->allowLocal);
+        $domainValidator = Domain::getInstance($this->allowLocal);
 
         if ($this->allowTld) {
-            return $domainValidator->isValid($domain) || (!$domain[0] !== '.' && $domainValidator->isValidTld($domain));
+            return $domainValidator->isValid($domain) || ($domain[0] !== '.' && $domainValidator->isValidTld($domain));
         }
 
         return $domainValidator->isValid($domain);

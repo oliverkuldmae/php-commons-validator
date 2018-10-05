@@ -80,7 +80,7 @@ class IDN {
      * @return bool
      */
     private static function isRootLabel(string $s) : bool {
-        return mb_strlen($s) === 1 && self::isLabelSeparator($s[0]);
+        return mb_strlen($s) === 1 && self::isLabelSeparator(mb_substr($s, 0, 1));
     }
 
     /**
@@ -170,24 +170,22 @@ class IDN {
                 }
             }
 
-            if (strpos($dest, '-') === 0 || $dest[$destLength - 1] === '-') {
+            if (mb_strpos($dest, '-') === 0 || $dest[$destLength - 1] === '-') {
                 throw new InvalidArgumentException('Has leading or trailing hyphen');
             }
         }
 
-        if (!$isASCII) {
-            // step 4
-            // If all code points are inside 0..0x7f, skip to step 8
-            if (!mb_check_encoding($dest, 'ASCII')) {
-                // step 5
-                // verify the sequence does not begin with ACE prefix
-                if (!self::startsWithACEPrefix($dest)) {
-                    // step 6
-                    // encode the sequence with punycode
-                    $dest = self::getPunyCode()->encode($dest);
-                } else {
-                    throw new InvalidArgumentException('The input starts with the ACE Prefix');
-                }
+        // step 4
+        // If all code points are inside 0..0x7f, skip to step 8
+        if (!$isASCII && !mb_check_encoding($dest, 'ASCII')) {
+            // step 5
+            // verify the sequence does not begin with ACE prefix
+            if (!self::startsWithACEPrefix($dest)) {
+                // step 6
+                // encode the sequence with punycode
+                $dest = self::getPunyCode()->encode($dest);
+            } else {
+                throw new InvalidArgumentException('The input starts with the ACE Prefix');
             }
         }
 

@@ -15,7 +15,7 @@ class EmailTest extends TestCase {
     protected $validator;
 
     protected function setUp() {
-        $this->validator = new Email();
+        $this->validator = Email::getInstance();
     }
 
     public function testEmail() {
@@ -167,8 +167,8 @@ class EmailTest extends TestCase {
      */
     public function testEmailLocalhost() {
         // Check the default is not to allow
-        $noLocal = new Email(false);
-        $allowLocal = new Email(true);
+        $noLocal = Email::getInstance(false);
+        $allowLocal = Email::getInstance(true);
         $this->assertEquals($this->validator, $noLocal);
 
         // Depends on the validator
@@ -491,12 +491,12 @@ class EmailTest extends TestCase {
      * email address, a single string is used without any dots)
      */
     public function testEmailAtTLD() {
-        $validator = new Email(false, true);
+        $validator = Email::getInstance(false, true);
         $this->assertTrue($validator->isValid("test@com"));
     }
 
     public function testValidator359() {
-        $validator = new Email(false, true);
+        $validator = Email::getInstance(false, true);
         $this->assertFalse($validator->isValid("test@.com"));
     }
 

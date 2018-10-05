@@ -36,11 +36,42 @@ class Domain implements Rule {
     private $allowLocal;
 
     /**
+     * @var Domain
+     */
+    private static $domainValidator;
+
+    /**
+     * @var Domain
+     */
+    private static $domainValidatorWithLocal;
+
+    /**
+     * @param bool $allowLocal
+     *
+     * @return Domain
+     */
+    public static function getInstance(bool $allowLocal = false) : Domain {
+        if ($allowLocal) {
+            if (!self::$domainValidatorWithLocal) {
+                self::$domainValidatorWithLocal = new self(true);
+            }
+
+            return self::$domainValidatorWithLocal;
+        }
+
+        if (!self::$domainValidator) {
+            self::$domainValidator = new self(false);
+        }
+
+        return self::$domainValidator;
+    }
+
+    /**
      * Domain constructor.
      *
      * @param bool $allowLocal
      */
-    public function __construct(bool $allowLocal) {
+    protected function __construct(bool $allowLocal = false) {
         $this->allowLocal = $allowLocal;
     }
 
@@ -74,7 +105,7 @@ class Domain implements Rule {
             return $this->isValidTld($matches[count($matches) - 1]);
         }
 
-        return $this->allowLocal && preg_match('/' . self::DOMAIN_LABEL_REGEX . '/', $domain);
+        return $this->allowLocal && preg_match('/^' . self::DOMAIN_LABEL_REGEX . '$/', $domain);
     }
 
     /**
@@ -109,7 +140,7 @@ class Domain implements Rule {
      */
     public function isValidInfrastructureTld(string $iTld) : bool {
         $key = $this->chompLeadingDot(self::unicodeToASCII($iTld));
-        return in_array(strtolower($key), TLD::INFRASTRUCTURE_TLDS, TRUE);
+        return in_array(mb_strtolower($key), TLD::INFRASTRUCTURE_TLDS, TRUE);
     }
 
     /**
@@ -123,7 +154,7 @@ class Domain implements Rule {
      */
     public function isValidGenericTld(string $gTld) : bool {
         $key = $this->chompLeadingDot(self::unicodeToASCII($gTld));
-        return in_array(strtolower($key), TLD::GENERIC_TLDS, TRUE);
+        return in_array(mb_strtolower($key), TLD::GENERIC_TLDS, TRUE);
     }
 
     /**
@@ -137,7 +168,7 @@ class Domain implements Rule {
      */
     public function isValidCountryCodeTld(string $ccTld) : bool {
         $key = $this->chompLeadingDot(self::unicodeToASCII($ccTld));
-        return in_array(strtolower($key), TLD::COUNTRY_CODE_TLDS, TRUE);
+        return in_array(mb_strtolower($key), TLD::COUNTRY_CODE_TLDS, TRUE);
     }
 
     /**
@@ -151,7 +182,7 @@ class Domain implements Rule {
      */
     public function isValidLocalTld(string $lTld) : bool {
         $key = $this->chompLeadingDot(self::unicodeToASCII($lTld));
-        return in_array(strtolower($key), TLD::LOCAL_TLDS, TRUE);
+        return in_array(mb_strtolower($key), TLD::LOCAL_TLDS, TRUE);
     }
 
     /**
@@ -160,13 +191,12 @@ class Domain implements Rule {
      * @return string
      */
     private function chompLeadingDot(string $str) : string {
-        if ('.' === substr($str, 0)) {
-            return substr($str, 1);
+        if (0 === mb_strpos($str, '.')) {
+            return mb_substr($str, 1);
         }
 
         return $str;
     }
-
 
     /**
      * Converts potentially Unicode input to punycode.
@@ -177,7 +207,7 @@ class Domain implements Rule {
      * @return string converted input, or original input if conversion fails
      */
     // Needed by UrlValidator
-    private static function unicodeToASCII(string $input) : string {
+    public static function unicodeToASCII(string $input) : string {
         if (IDN::isASCIIOnly($input)) { // skip possibly expensive processing
             return $input;
         }
@@ -211,6 +241,33 @@ class Domain implements Rule {
         } catch (InvalidArgumentException $e) { // input is not valid
             return $input;
         }
+    }
+
+    /**
+     * Must conform to isValid above
+     *
+     * @param string|null $domain
+     *
+     * @return bool
+     */
+    public function isValidDomainSyntax(string $domain = null) : bool {
+        if (null === $domain) {
+            return false;
+        }
+
+        $domain = self::unicodeToASCII($domain);
+
+        // hosts must be equally reachable via punycode and Unicode;
+        // Unicode is never shorter than punycode, so check punycode
+        // if $domain did not convert, then it will be caught by ASCII
+        // checks in the regexes below
+        if (mb_strlen($domain) > self::MAX_DOMAIN_LENGTH) {
+            return false;
+        }
+
+        preg_match(self::DOMAIN_NAME_REGEX, $domain, $matches);
+
+        return !empty($matches) || preg_match('/^' . self::DOMAIN_LABEL_REGEX . '$/', $domain);
     }
 
     /**
