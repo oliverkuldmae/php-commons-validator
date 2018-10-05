@@ -51,7 +51,7 @@ class InetAddress implements Rule {
         }
 
         foreach ($matches as $ipSegment) {
-            if (empty($ipSegment)) {
+            if ('' === $ipSegment) {
                 return false;
             }
 
@@ -81,22 +81,23 @@ class InetAddress implements Rule {
             return false;
         }
 
-        if ((strpos($inet6Address, ':') === 0 && '::' !== $inet6Address[0])
-            || ($inet6Address[strlen($inet6Address) - 1] === ':' && $inet6Address[strlen($inet6Address) - 1] !== '::')
+        $addressLength = strlen($inet6Address);
+        if ((strpos($inet6Address, ':') === 0 && strpos($inet6Address, '::') !== 0)
+            || ($inet6Address[$addressLength - 1] === ':' && substr($inet6Address, $addressLength - 2, 2) !== '::')
         ) {
             return false;
         }
 
         $octets = explode(':', $inet6Address);
         if ($containsCompressedZeroes) {
-            $octetList = [];
             if ($octets[count($octets) - 1] === '::') {
                 $octets[] = '';
-            } else if (!empty($octetList) && strpos($inet6Address, '::') === 0) {
-                unset($octetList[0]);
+            } else if (!empty($octets) && strpos($inet6Address, '::') === 0) {
+                unset($octets[0]);
             }
 
-            $octets = $octetList;
+            // Get values to reset keys
+            $octets = array_values($octets);
         }
 
         $octetCount = count($octets);
@@ -125,7 +126,7 @@ class InetAddress implements Rule {
                     continue;
                 }
 
-                if ($octetCount > self::IPV6_MAX_HEX_DIGITS_PER_GROUP) {
+                if (strlen($octet) > self::IPV6_MAX_HEX_DIGITS_PER_GROUP) {
                     return false;
                 }
 
