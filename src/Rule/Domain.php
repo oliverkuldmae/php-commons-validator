@@ -84,7 +84,7 @@ class Domain implements Rule {
      *
      * @return true if the parameter is a valid domain name
      */
-    public function isValid($domain) : bool {
+    public function isValid($domain = null) : bool {
         if ($domain === null) {
             return false;
         }

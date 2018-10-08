@@ -30,11 +30,24 @@ class InetAddress implements Rule {
     const IPV6_MAX_HEX_DIGITS_PER_GROUP = 4;
 
     /**
+     * @var InetAddress
+     */
+    private static $validator;
+
+    public static function getInstance() : InetAddress {
+        if (!self::$validator) {
+            self::$validator = new self();
+        }
+
+        return self::$validator;
+    }
+
+    /**
      * @param string $inetAddress
      *
      * @return bool
      */
-    public function isValid($inetAddress) : bool {
+    public function isValid($inetAddress = null) : bool {
         return $this->isValidInet4Address($inetAddress) || $this->isValidInet6Address($inetAddress);
     }
 
@@ -53,6 +66,11 @@ class InetAddress implements Rule {
         }
 
         foreach ($matches as $ipSegment) {
+            // preg_match stores the full match as the first $matches array element
+            if ($ipSegment === $inet4Address) {
+                continue;
+            }
+
             if ('' === $ipSegment) {
                 return false;
             }

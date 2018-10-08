@@ -113,7 +113,7 @@ class Email implements Rule {
      *
      * @return true if the email address is valid.
      */
-    public function isValid($email) : bool {
+    public function isValid($email = null) : bool {
         if (null === $email) {
             return false;
         }

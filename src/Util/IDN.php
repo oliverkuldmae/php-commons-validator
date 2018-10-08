@@ -34,7 +34,8 @@ class IDN {
 
         while ($p < $inputLength) {
             $q = self::searchDots($input, $p);
-            $out .= self::toASCIIInternal(mb_substr($input, $p, $q), $flag);
+            $length = $q > 0 ? $q - $p : $q;
+            $out .= self::toASCIIInternal(mb_substr($input, $p, $length), $flag);
 
             if ($q !== $inputLength) {
                 // has more labels, or keep the trailing dot as at present

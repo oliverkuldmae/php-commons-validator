@@ -13,7 +13,7 @@ class InetAddressTest extends TestCase {
     protected $validator;
 
     protected function setUp() {
-        $this->validator = new InetAddress();
+        $this->validator = InetAddress::getInstance();
     }
 
     /**
