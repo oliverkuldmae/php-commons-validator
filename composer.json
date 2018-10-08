@@ -1,0 +1,29 @@
+{
+    "name": "oliverkuldmae/php-commons-validator",
+    "description": "Port of Java Apache Commons Validator",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Oliver Kuldmäe",
+            "email": "oliver.kuldmae@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "true/punycode": "~2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPCommons\\Validator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PHPCommons\\Validator\\Tests\\": "tests/"
+        }
+    }
+}
