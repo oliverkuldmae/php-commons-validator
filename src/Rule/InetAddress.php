@@ -3,7 +3,9 @@
 namespace PHPCommons\Validator\Rule;
 
 use PHPCommons\Validator\Rule;
+use function array_slice;
 use function count;
+use function intval;
 use function strlen;
 
 /**
@@ -82,15 +84,16 @@ class InetAddress implements Rule {
         }
 
         $addressLength = strlen($inet6Address);
+        $endsWithDoubleColon = substr($inet6Address, $addressLength - 2, 2) === '::';
         if ((strpos($inet6Address, ':') === 0 && strpos($inet6Address, '::') !== 0)
-            || ($inet6Address[$addressLength - 1] === ':' && substr($inet6Address, $addressLength - 2, 2) !== '::')
+            || ($inet6Address[$addressLength - 1] === ':' && !$endsWithDoubleColon)
         ) {
             return false;
         }
 
-        $octets = explode(':', $inet6Address);
+        $octets = self::splitOctets($inet6Address);
         if ($containsCompressedZeroes) {
-            if ($octets[count($octets) - 1] === '::') {
+            if ($endsWithDoubleColon) {
                 $octets[] = '';
             } else if (!empty($octets) && strpos($inet6Address, '::') === 0) {
                 unset($octets[0]);
@@ -130,8 +133,13 @@ class InetAddress implements Rule {
                     return false;
                 }
 
-                // todo check for failure?
-                $octetInt = base_convert($octet, 10, 16);
+                $octetInt = intval($octet, 16);
+
+                // Check if valid base16 number
+                if ($octetInt === 0 && !is_numeric($octet)) {
+                    return false;
+                }
+
                 if ($octetInt < 0 || $octetInt > self::MAX_UNSIGNED_SHORT) {
                     return false;
                 }
@@ -146,6 +154,36 @@ class InetAddress implements Rule {
         }
 
         return true;
+    }
+
+    /**
+     * Function to emulate Java's String.split() method
+     *
+     * @param string $s
+     *
+     * @return array|string
+     */
+    private static function splitOctets(string $s) {
+        $off = $next = 0;
+        $list = [];
+
+        while (($next = strpos($s, ':', $off)) !== false) {
+            $list[] = substr($s, $off, $next - $off);
+            $off = $next + 1;
+        }
+
+        if ($off === 0) {
+            return $s;
+        }
+
+        $list[] = substr($s, $off, strlen($s));
+
+        $resultSize = count($list);
+        while ($resultSize > 0 && '' === $list[$resultSize - 1]) {
+            $resultSize--;
+        }
+
+        return array_slice($list, 0, $resultSize);
     }
 
 }

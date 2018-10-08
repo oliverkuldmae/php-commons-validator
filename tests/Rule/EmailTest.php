@@ -172,24 +172,11 @@ class EmailTest extends TestCase {
         $this->assertEquals($this->validator, $noLocal);
 
         // Depends on the validator
-        $this->assertTrue(
-            $allowLocal->isValid("joe@localhost.localdomain"),
-            "@localhost.localdomain should be accepted but wasn't"
-        );
+        $this->assertTrue($allowLocal->isValid("joe@localhost.localdomain"), "@localhost.localdomain should be accepted but wasn't");
+        $this->assertTrue($allowLocal->isValid("joe@localhost"), "@localhost should be accepted but wasn't");
 
-        $this->assertTrue(
-            $allowLocal->isValid("joe@localhost"),
-            "@localhost should be accepted but wasn't"
-        );
-
-        $this->assertFalse(
-            $noLocal->isValid("joe@localhost.localdomain"),
-            "@localhost.localdomain should be accepted but wasn't"
-        );
-        $this->assertFalse(
-            $noLocal->isValid("joe@localhost"),
-            "@localhost should be accepted but wasn't"
-        );
+        $this->assertFalse($noLocal->isValid("joe@localhost.localdomain"), "@localhost.localdomain should be accepted but wasn't");
+        $this->assertFalse($noLocal->isValid("joe@localhost"), "@localhost should be accepted but wasn't");
     }
 
     /**

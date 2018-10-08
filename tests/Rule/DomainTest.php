@@ -147,10 +147,7 @@ class DomainTest extends TestCase {
     }
 
     public function testValidator297() {
-        $this->assertTrue(
-            $this->validator->isValid("xn--d1abbgf6aiiy.xn--p1ai"),
-            "xn--d1abbgf6aiiy.xn--p1ai should validate"
-        ); // This uses a valid TLD
+        $this->assertTrue($this->validator->isValid("xn--d1abbgf6aiiy.xn--p1ai"), "xn--d1abbgf6aiiy.xn--p1ai should validate"); // This uses a valid TLD
     }
 
     // labels are a max of 63 chars and domains 253
