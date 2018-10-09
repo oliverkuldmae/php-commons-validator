@@ -1,8 +1,7 @@
 <?php
 
-namespace PHPCommons\Validator\Rule;
+namespace PHPCommons\Validator\Rules;
 
-use PHPCommons\Validator\Rule;
 use function array_slice;
 use function count;
 use function intval;

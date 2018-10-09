@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPCommons\Validator\Util;
+namespace PHPCommons\Validator\Utils;
 
 use InvalidArgumentException;
 use TrueBV\Punycode;

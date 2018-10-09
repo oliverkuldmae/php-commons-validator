@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPCommons\Validator;
+namespace PHPCommons\Validator\Rules;
 
 interface Rule {
 

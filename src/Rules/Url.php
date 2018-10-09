@@ -1,8 +1,7 @@
 <?php
 
-namespace PHPCommons\Validator\Rule;
+namespace PHPCommons\Validator\Rules;
 
-use PHPCommons\Validator\Rule;
 use function in_array;
 
 /**

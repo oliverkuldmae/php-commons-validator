@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPCommons\Validator\Tests\Rule;
+namespace PHPCommons\Validator\Tests\Rules;
 
-use PHPCommons\Validator\Rule\Domain;
-use PHPCommons\Validator\Util\TLD;
+use PHPCommons\Validator\Rules\Domain;
+use PHPCommons\Validator\Utils\TLD;
 use PHPUnit\Framework\TestCase;
 use function count;
 use function strlen;

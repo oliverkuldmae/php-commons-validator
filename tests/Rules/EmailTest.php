@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPCommons\Validator\Tests\Rule;
+namespace PHPCommons\Validator\Tests\Rules;
 
-use PHPCommons\Validator\Rule\Email;
+use PHPCommons\Validator\Rules\Email;
 use PHPCommons\Validator\Tests\ResultPair;
 use PHPUnit\Framework\TestCase;
 use function chr;
