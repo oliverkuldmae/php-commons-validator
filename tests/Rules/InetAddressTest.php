@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPCommons\Validator\Tests\Rule;
+namespace PHPCommons\Validator\Tests\Rules;
 
-use PHPCommons\Validator\Rule\InetAddress;
+use PHPCommons\Validator\Rules\InetAddress;
 use PHPUnit\Framework\TestCase;
 
 class InetAddressTest extends TestCase {

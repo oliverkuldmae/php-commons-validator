@@ -1,10 +1,9 @@
 <?php
 
-namespace PHPCommons\Validator\Rule;
+namespace PHPCommons\Validator\Rules;
 
 use InvalidArgumentException;
-use PHPCommons\Validator\Rule;
-use PHPCommons\Validator\Util\{IDN, TLD};
+use PHPCommons\Validator\Utils\{IDN, TLD};
 use function count;
 use function in_array;
 use function strlen;
