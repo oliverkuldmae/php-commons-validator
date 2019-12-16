@@ -3,6 +3,7 @@
 namespace PHPCommons\Validator\Tests\Rules;
 
 use PHPCommons\Validator\Rules\IBAN;
+use PHPCommons\Validator\Utils\IBANCheckDigit;
 use PHPUnit\Framework\TestCase;
 
 class IBANTest extends TestCase {
@@ -33,6 +34,7 @@ class IBANTest extends TestCase {
         'DK5000400440116243',
         'DO28BAGR00000001212453611324',
         'EE382200221020145685',
+        'EE525819462381087386',
         'ES9121000418450200051332',
         'FI2112345600000785',
         'FI5542345670000081',
@@ -112,18 +114,19 @@ class IBANTest extends TestCase {
     ];
 
 
-    /**
-     * @var IBAN
-     */
+    /** @var IBAN */
     protected $validator;
+    /** @var IBANCheckDigit */
+    protected $checkDigit;
 
     protected function setUp() {
         $this->validator = IBAN::getInstance();
+        $this->checkDigit = IBANCheckDigit::getInstance();
     }
 
     public function testValid() : void {
         foreach (self::VALID_IBANS as $iban) {
-            // $this->assertTrue("Checksum fail: "+f, IBANCheckDigit.IBAN_CHECK_DIGIT.isValid($iban));
+            $this->assertTrue($this->checkDigit->isValid($iban), "Checksum fail: {$iban}");
             $this->assertTrue($this->validator->hasValidator($iban), "Missing validator: {$iban}");
             $this->assertTrue($this->validator->isValid($iban), $iban);
         }
