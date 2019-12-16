@@ -19,11 +19,11 @@ class TLD {
     // .bl  country-code    Not assigned
     // .um  country-code    Not assigned
 
-    const INFRASTRUCTURE_TLDS = [
+    public const INFRASTRUCTURE_TLDS = [
         'arpa',               // internet infrastructure
     ];
 
-    const GENERIC_TLDS = [
+    public const GENERIC_TLDS = [
         // Taken from Version 2017020400, Last Updated Sat Feb  4 07:07:01 2017 UTC
         'aaa', // aaa American Automobile Association, Inc.
         'aarp', // aarp AARP
@@ -1265,11 +1265,11 @@ class TLD {
         'zuerich', // zuerich Kanton Zürich (Canton of Zurich)
     ];
 
-    const LOCAL_TLDS = [
+    public const LOCAL_TLDS = [
         'localdomain',         // Also widely used as localhost.localdomain
         'localhost',           // RFC2606 defined
     ];
-    const COUNTRY_CODE_TLDS = [
+    public const COUNTRY_CODE_TLDS = [
         'ac',                 // Ascension Island
         'ad',                 // Andorra
         'ae',                 // United Arab Emirates

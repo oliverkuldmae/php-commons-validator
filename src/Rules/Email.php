@@ -2,8 +2,6 @@
 
 namespace PHPCommons\Validator\Rules;
 
-use function strlen;
-
 /**
  * Perform email validations.
  *
@@ -14,16 +12,16 @@ use function strlen;
  */
 class Email implements Rule {
 
-    const SPECIAL_CHARS = '[:cntrl:]\\(\\)<>@,;:\'\\\\\\\"\\.\\[\\]';
-    const VALID_CHARS = '(\\\\.)|[^\\s' . self::SPECIAL_CHARS . ']';
-    const QUOTED_USER = '("(\\"|[^"])*")';
-    const WORD = '((' . self::VALID_CHARS . "|')+|" . self::QUOTED_USER . ')';
+    private const SPECIAL_CHARS = '[:cntrl:]\\(\\)<>@,;:\'\\\\\\\"\\.\\[\\]';
+    private const VALID_CHARS = '(\\\\.)|[^\\s' . self::SPECIAL_CHARS . ']';
+    private const QUOTED_USER = '("(\\"|[^"])*")';
+    private const WORD = '((' . self::VALID_CHARS . "|')+|" . self::QUOTED_USER . ')';
 
-    const EMAIL_REGEX = '/^\\s*?(.+)@(.+?)\\s*$/';
-    const IP_DOMAIN_REGEX = '/^\\[(.*)\\]$/';
-    const USER_REGEX = '/^\\s*' . self::WORD . '(\\.' . self::WORD . ')*$/';
+    private const EMAIL_REGEX = '/^\\s*?(.+)@(.+?)\\s*$/';
+    private const IP_DOMAIN_REGEX = '/^\\[(.*)\\]$/';
+    private const USER_REGEX = '/^\\s*' . self::WORD . '(\\.' . self::WORD . ')*$/';
 
-    const MAX_USERNAME_LEN = 64;
+    private const MAX_USERNAME_LEN = 64;
 
     /**
      * @var boolean

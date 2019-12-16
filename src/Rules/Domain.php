@@ -4,30 +4,27 @@ namespace PHPCommons\Validator\Rules;
 
 use InvalidArgumentException;
 use PHPCommons\Validator\Utils\{IDN, TLD};
-use function count;
-use function in_array;
-use function strlen;
 
 class Domain implements Rule {
 
-    const MAX_DOMAIN_LENGTH = 253;
+    private const MAX_DOMAIN_LENGTH = 253;
 
     // Regular expression strings for hostnames (derived from RFC2396 and RFC 1123)
 
     // RFC2396: domainlabel   = alphanum | alphanum *( alphanum | "-" ) alphanum
     // Max 63 characters
-    const DOMAIN_LABEL_REGEX = '[[:alnum:]](?>[[:alnum:]-]{0,61}[[:alnum:]])?';
+    private const DOMAIN_LABEL_REGEX = '[[:alnum:]](?>[[:alnum:]-]{0,61}[[:alnum:]])?';
 
     // RFC2396 toplabel = alpha | alpha *( alphanum | "-" ) alphanum
     // Max 63 characters
-    const TOP_LABEL_REGEX = '[[:alpha:]](?>[[:alnum:]-]{0,61}[[:alnum:]])?';
+    private const TOP_LABEL_REGEX = '[[:alpha:]](?>[[:alnum:]-]{0,61}[[:alnum:]])?';
 
     // RFC2396 hostname = *( domainlabel "." ) toplabel [ "." ]
     // Note that the regex currently requires both a domain label and a top level label, whereas
     // the RFC does not. This is because the regex is used to detect if a TLD is present.
     // If the match fails, input is checked against DOMAIN_LABEL_REGEX (hostnameRegex)
     // RFC1123 sec 2.1 allows hostnames to start with a digit
-    const DOMAIN_NAME_REGEX = '/^(?:' . self::DOMAIN_LABEL_REGEX . "\.)+" . '(' . self::TOP_LABEL_REGEX . ")\.?$/u";
+    private const DOMAIN_NAME_REGEX = '/^(?:' . self::DOMAIN_LABEL_REGEX . "\.)+" . '(' . self::TOP_LABEL_REGEX . ")\.?$/u";
 
     /**
      * @var boolean

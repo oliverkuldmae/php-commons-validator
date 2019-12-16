@@ -4,18 +4,16 @@ namespace PHPCommons\Validator\Utils;
 
 use InvalidArgumentException;
 use TrueBV\Punycode;
-use function mb_strlen;
-use function ord;
 
 class IDN {
 
     /**
      * Flag to turn on the check against STD-3 ASCII rules
      */
-    const USE_STD3_ASCII_RULES = 0x02;
+    private const USE_STD3_ASCII_RULES = 0x02;
 
-    const MAX_LABEL_LENGTH = 63;
-    const ACE_PREFIX = 'xn--';
+    private const MAX_LABEL_LENGTH = 63;
+    private const ACE_PREFIX = 'xn--';
 
     /**
      * @var Punycode
@@ -253,7 +251,7 @@ class IDN {
      */
     private static function toASCIILower(string $c) : string {
         if ('A' <= $c && $c <= 'Z') {
-            return ($c . 'a' - 'A');
+            return ($c . ('a' - 'A'));
         }
 
         return $c;

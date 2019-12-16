@@ -2,8 +2,6 @@
 
 namespace PHPCommons\Validator\Rules;
 
-use function in_array;
-
 /**
  * URL Validation routines.
  * Behavior of validation is modified by passing in options:
@@ -20,93 +18,93 @@ use function in_array;
  */
 class Url implements Rule {
 
-    const MAX_UNSIGNED_16_BIT_INT = 0xFFFF; // port max
+    private const MAX_UNSIGNED_16_BIT_INT = 0xFFFF; // port max
 
     /**
      * Allows all validly formatted schemes to pass validation instead of
      * supplying a set of valid schemes.
      */
-    const ALLOW_ALL_SCHEMES = 1 << 0;
+    public const ALLOW_ALL_SCHEMES = 1 << 0;
 
     /**
      * Allow two slashes in the path component of the URL.
      */
-    const ALLOW_2_SLASHES = 1 << 1;
+    public const ALLOW_2_SLASHES = 1 << 1;
 
     /**
      * Enabling this options disallows any URL fragments.
      */
-    const NO_FRAGMENTS = 1 << 2;
+    public const NO_FRAGMENTS = 1 << 2;
 
     /**
      * Allow local URLs, such as http://localhost/ or http://machine/ .
      * This enables a broad-brush check, for complex local machine name validation requirements you should create your own regex instead
      */
-    const ALLOW_LOCAL_URLS = 1 << 3; // CHECKSTYLE IGNORE MagicNumber
+    public const ALLOW_LOCAL_URLS = 1 << 3; // CHECKSTYLE IGNORE MagicNumber
 
     /**
      * This expression derived/taken from the BNF for URI (RFC2396).
      */
-    const URL_REGEX =
+    private const URL_REGEX =
         '/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$/';
     //     12             3    4           5       6   7        8 9
 
     /**
      * Schema/Protocol (ie. http:, ftp:, file:, etc).
      */
-    const PARSE_URL_SCHEME = 2;
+    private const PARSE_URL_SCHEME = 2;
 
     /**
      * Includes hostname/ip and port number.
      */
-    const PARSE_URL_AUTHORITY = 4;
+    private const PARSE_URL_AUTHORITY = 4;
 
-    const PARSE_URL_PATH = 5;
+    private const PARSE_URL_PATH = 5;
 
-    const PARSE_URL_QUERY = 7;
+    private const PARSE_URL_QUERY = 7;
 
-    const PARSE_URL_FRAGMENT = 9;
+    private const PARSE_URL_FRAGMENT = 9;
 
     /**
      * Protocol scheme (e.g. http, ftp, https).
      */
-    const SCHEME_REGEX = '/^[[:alpha:]][[:alnum:]\\+\\-\\.]*$/';
+    private const SCHEME_REGEX = '/^[[:alpha:]][[:alnum:]\\+\\-\\.]*$/';
 
     // Drop numeric, and  "+-." for now
     // TODO does not allow for optional userinfo.
     // Validation of character set is done by isValidAuthority
-    const AUTHORITY_CHARS_REGEX = "[:alnum:]\\-\\."; // allows for IPV4 but not IPV6
-    const IPV6_REGEX = '[0-9a-fA-F:]+'; // do this as separate match because : could cause ambiguity with port prefix
+    private const AUTHORITY_CHARS_REGEX = "[:alnum:]\\-\\."; // allows for IPV4 but not IPV6
+    private const IPV6_REGEX = '[0-9a-fA-F:]+'; // do this as separate match because : could cause ambiguity with port prefix
 
     // userinfo    = *( unreserved / pct-encoded / sub-delims / ":" )
     // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
     // sub-delims    = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
     // We assume that password has the same valid chars as user info
-    const USERINFO_CHARS_REGEX = "[a-zA-Z0-9%-._~!$&'()*+,;=]";
+    private const USERINFO_CHARS_REGEX = "[a-zA-Z0-9%-._~!$&'()*+,;=]";
 
     // since neither ':' nor '@' are allowed chars, we don't need to use non-greedy matching
-    const USERINFO_FIELD_REGEX =
+    private const USERINFO_FIELD_REGEX =
         self::USERINFO_CHARS_REGEX . '+' . // At least one character for the name
         '(?::' . self::USERINFO_CHARS_REGEX . '*)?@'; // colon and password may be absent
 
-    const AUTHORITY_REGEX =
+    private const AUTHORITY_REGEX =
         "/^(?:\\[(" . self::IPV6_REGEX . ")\\]|(?:(?:" . self::USERINFO_FIELD_REGEX . ')?([' . self::AUTHORITY_CHARS_REGEX . ']*)))(?::(\\d*))?(.*)?$/';
     //           1                          e.g. user:pass@          2                                         3       4
 
-    const PARSE_AUTHORITY_IPV6 = 1;
+    private const PARSE_AUTHORITY_IPV6 = 1;
 
-    const PARSE_AUTHORITY_HOST_IP = 2; // excludes userinfo, if present
+    private const PARSE_AUTHORITY_HOST_IP = 2; // excludes userinfo, if present
 
-    const PARSE_AUTHORITY_PORT = 3; // excludes leading colon
+    private const PARSE_AUTHORITY_PORT = 3; // excludes leading colon
 
     /**
      * Should always be empty. The code currently allows spaces.
      */
-    const PARSE_AUTHORITY_EXTRA = 4;
+    private const PARSE_AUTHORITY_EXTRA = 4;
 
-    const PATH_REGEX = '/^(\/[-\\w:@&?=+,.!\/~*\'%$_;\\(\\)]*)?$/';
+    private const PATH_REGEX = '/^(\/[-\\w:@&?=+,.!\/~*\'%$_;\\(\\)]*)?$/';
 
-    const QUERY_REGEX = '/^(\\S*)$/';
+    private const QUERY_REGEX = '/^(\\S*)$/';
 
     /**
      * Holds the set of current validation options.
@@ -127,7 +125,7 @@ class Url implements Rule {
     /**
      * If no schemes are provided, default to this set.
      */
-    const DEFAULT_SCHEMES = ['http', 'https', 'ftp']; // Must be lower-case
+    private const DEFAULT_SCHEMES = ['http', 'https', 'ftp']; // Must be lower-case
 
     /**
      * Url constructor.

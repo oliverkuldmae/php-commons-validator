@@ -10,7 +10,9 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.3",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
         "true/punycode": "~2.0"
     },
     "require-dev": {

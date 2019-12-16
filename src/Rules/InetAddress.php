@@ -2,11 +2,6 @@
 
 namespace PHPCommons\Validator\Rules;
 
-use function array_slice;
-use function count;
-use function intval;
-use function strlen;
-
 /**
  * InetAddress validation and conversion routines.
  *
@@ -14,19 +9,17 @@ use function strlen;
  */
 class InetAddress implements Rule {
 
-    const IPV4_MAX_OCTET_VALUE = 255;
+    private const IPV4_MAX_OCTET_VALUE = 255;
 
-    const MAX_UNSIGNED_SHORT = 0xffff;
+    private const MAX_UNSIGNED_SHORT = 0xffff;
 
-    const BASE_16 = 16;
-
-    const IPV4_REGEX = "/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/";
+    private const IPV4_REGEX = "/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/";
 
     // Max number of hex groups (separated by :) in an IPV6 address
-    const IPV6_MAX_HEX_GROUPS = 8;
+    private const IPV6_MAX_HEX_GROUPS = 8;
 
     // Max hex digits in each IPv6 group
-    const IPV6_MAX_HEX_DIGITS_PER_GROUP = 4;
+    private const IPV6_MAX_HEX_DIGITS_PER_GROUP = 4;
 
     /**
      * @var InetAddress
@@ -111,6 +104,7 @@ class InetAddress implements Rule {
         $octets = self::splitOctets($inet6Address);
         if ($containsCompressedZeroes) {
             if ($endsWithDoubleColon) {
+                /** @noinspection UnsupportedStringOffsetOperationsInspection */
                 $octets[] = '';
             } else if (!empty($octets) && strpos($inet6Address, '::') === 0) {
                 unset($octets[0]);
@@ -120,7 +114,7 @@ class InetAddress implements Rule {
             $octets = array_values($octets);
         }
 
-        $octetCount = count($octets);
+        $octetCount = is_countable($octets) ? count($octets) : 1;
         if ($octetCount > self::IPV6_MAX_HEX_GROUPS) {
             return false;
         }
@@ -128,41 +122,43 @@ class InetAddress implements Rule {
         $validOctets = 0;
         $emptyOctets = 0; // consecutive empty chunks
 
-        for ($i = 0; $i < $octetCount; $i++) {
-            $octet = $octets[$i];
+        if (is_countable( $octets)) {
+            foreach ($octets as $i => $iValue) {
+                $octet = $iValue;
 
-            if ('' === $octet) {
-                if (++$emptyOctets > 1) {
-                    return false;
-                }
-            } else {
-                $emptyOctets = 0;
-                if ($i === $octetCount - 1 && strpos($octet, '.') !== FALSE) {
-                    if (!$this->isValidInet4Address($octet)) {
+                if ('' === $octet) {
+                    if (++$emptyOctets > 1) {
+                        return false;
+                    }
+                } else {
+                    $emptyOctets = 0;
+                    if ($i === $octetCount - 1 && strpos($octet, '.') !== FALSE) {
+                        if (!$this->isValidInet4Address($octet)) {
+                            return false;
+                        }
+
+                        $validOctets += 2;
+                        continue;
+                    }
+
+                    if (strlen($octet) > self::IPV6_MAX_HEX_DIGITS_PER_GROUP) {
                         return false;
                     }
 
-                    $validOctets += 2;
-                    continue;
+                    $octetInt = intval($octet, 16);
+
+                    // Check if valid base16 number
+                    if ($octetInt === 0 && !is_numeric($octet)) {
+                        return false;
+                    }
+
+                    if ($octetInt < 0 || $octetInt > self::MAX_UNSIGNED_SHORT) {
+                        return false;
+                    }
                 }
 
-                if (strlen($octet) > self::IPV6_MAX_HEX_DIGITS_PER_GROUP) {
-                    return false;
-                }
-
-                $octetInt = intval($octet, 16);
-
-                // Check if valid base16 number
-                if ($octetInt === 0 && !is_numeric($octet)) {
-                    return false;
-                }
-
-                if ($octetInt < 0 || $octetInt > self::MAX_UNSIGNED_SHORT) {
-                    return false;
-                }
+                $validOctets++;
             }
-
-            $validOctets++;
         }
 
         /** @noinspection IfReturnReturnSimplificationInspection */
