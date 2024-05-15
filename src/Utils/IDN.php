@@ -60,7 +60,7 @@ class IDN {
         }
 
         $length = mb_strlen($input);
-        $chars = preg_split('//u', $input, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $input, -1, PREG_SPLIT_NO_EMPTY);
 
         for ($i = 0; $i < $length; $i++) {
             if (ord($chars[$i]) > 0x7F) { // CHECKSTYLE IGNORE MagicNumber
