@@ -110,7 +110,7 @@ class IDN {
      */
     private static function searchDots(string $s, int $start) : int {
         $stringLength = mb_strlen($s);
-        $chars = preg_split('//u', $s, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $s, -1, PREG_SPLIT_NO_EMPTY);
 
         for ($i = $start; $i < $stringLength; $i++) {
             if (self::isLabelSeparator($chars[$i])) {
@@ -162,7 +162,7 @@ class IDN {
         if ($useSTD3ASCIIRules) {
             $destLength = mb_strlen($dest);
             for ($i = 0; $i < $destLength; $i++) {
-                $chars = preg_split('//u', $dest, null, PREG_SPLIT_NO_EMPTY);
+                $chars = preg_split('//u', $dest, -1, PREG_SPLIT_NO_EMPTY);
 
                 if (self::isNonLDHAsciiCodePoint($chars[$i])) {
                     throw new InvalidArgumentException('Contains non-LDH ASCII characters');
@@ -233,7 +233,7 @@ class IDN {
             return false;
         }
 
-        $chars = preg_split('//u', $input, null, PREG_SPLIT_NO_EMPTY);
+        $chars = preg_split('//u', $input, -1, PREG_SPLIT_NO_EMPTY);
 
         for ($i = 0; $i < $acePrefixLength; $i++) {
             if (self::toASCIILower($chars[$i]) !== self::ACE_PREFIX[$i]) {
